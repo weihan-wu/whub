@@ -1,6 +1,11 @@
 const NAME_OR_PASSWORD_IS_REQUIRED = '用户名或密码不得为空。'
 const USER_ALREADY_EXISTS = '该用户已存在。'
+const USER_DOES_NOT_EXISTS = '该用户不存在。'
+const PASSWORD_ERROR = '密码错误。'
+
 module.exports = {
   NAME_OR_PASSWORD_IS_REQUIRED,
-  USER_ALREADY_EXISTS
+  USER_ALREADY_EXISTS,
+  USER_DOES_NOT_EXISTS,
+  PASSWORD_ERROR
 }

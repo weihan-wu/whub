@@ -11,6 +11,14 @@ const errorHandler = (error, ctx) => {
       status = 409
       message = errorTypes.USER_ALREADY_EXISTS
       break;
+    case errorTypes.USER_DOES_NOT_EXISTS:
+      status = 400
+      message = errorTypes.USER_DOES_NOT_EXISTS
+      break;
+    case errorTypes.PASSWORD_ERROR:
+      status = 400
+      message = errorTypes.PASSWORD_ERROR
+      break;
     default:
       status = 404
       message = 'NOT FOUND'
