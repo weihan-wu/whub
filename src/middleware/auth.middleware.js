@@ -11,7 +11,7 @@ const verifyLogin = async (ctx, next) => {
 
   const result = await getUserByName(name)
   const user = result[0][0]
-  
+
   if (!user) {
     const error = new Error(errorTypes.USER_DOES_NOT_EXISTS)
     return ctx.app.emit('error', error, ctx)
@@ -21,6 +21,8 @@ const verifyLogin = async (ctx, next) => {
     const error = new Error(errorTypes.PASSWORD_ERROR)
     return ctx.app.emit('error', error, ctx)
   }
+
+  ctx.user = user
 
   await next()
 }
