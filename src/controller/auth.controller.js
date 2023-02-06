@@ -18,6 +18,10 @@ class AuthController {
     }
     await next()
   }
+
+  async success(ctx, next) {
+    ctx.body = '授权成功'
+  }
 }
 
 module.exports = new AuthController()

@@ -19,6 +19,10 @@ const errorHandler = (error, ctx) => {
       status = 400
       message = errorTypes.PASSWORD_ERROR
       break;
+    case errorTypes.UNAUTHORIZATION:
+      status = 401
+      message = errorTypes.UNAUTHORIZATION
+      break;
     default:
       status = 404
       message = 'NOT FOUND'
