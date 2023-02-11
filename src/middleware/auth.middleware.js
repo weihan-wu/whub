@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 const errorTypes = require('../constants/error-types')
 const { getUserByName } = require('../service/user.service')
-const { checkMoment } = require('../service/auth.service')
+const { checkResource } = require('../service/auth.service')
 const { md5password } = require('../utils/password.handle')
 
 const { PUBLIC_KEY } = require('../app/config')
@@ -58,12 +58,21 @@ const verifyAuth = async (ctx, next) => {
   }
 }
 
+/**
+ * 验证用户有改动某张表中某条数据的权限
+ * 由于接口遵守RESTful风格，所以用于检测表的表明从传入的参数的key去获取
+ * 也可以利用闭包原理，将原本的中间件函数作为一个函数的返回值传出，在作为中间件进行调用时传入表名等参数
+ * @param {*} ctx 
+ * @param {*} next 
+ */
 const verifyPermission = async (ctx, next) => {
+  const [resourceKey] = Object.keys(ctx.params)
+  const tableName = resourceKey.replace('Id', '')
+  const resourceId = ctx.params[resourceKey]
   const userId = ctx.user.id
-  const { momentId } = ctx.request.params
 
   try {
-    const isPermission = await checkMoment(momentId, userId)
+    const isPermission = await checkResource(tableName, resourceId, userId)
     if (!isPermission) throw new Error(errorTypes.UNPERMISSION)
     await next()
   } catch (err) {
@@ -71,5 +80,4 @@ const verifyPermission = async (ctx, next) => {
     ctx.app.emit('error', error, ctx)
   }
 }
-
 module.exports = { verifyLogin, verifyAuth, verifyPermission }
