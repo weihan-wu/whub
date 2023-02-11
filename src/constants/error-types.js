@@ -3,6 +3,7 @@ const USER_ALREADY_EXISTS = '该用户已存在。'
 const USER_DOES_NOT_EXISTS = '该用户不存在。'
 const PASSWORD_ERROR = '密码错误。'
 const UNAUTHORIZATION = '未授权。'
+const AUTHORIZATION_EXPIRED = '授权过期。'
 const UNPERMISSION = '权限不足。'
 const DATA_DOES_NOT_EXISTS = '目标数据不存在。'
 
@@ -13,5 +14,6 @@ module.exports = {
   PASSWORD_ERROR,
   UNAUTHORIZATION,
   UNPERMISSION,
-  DATA_DOES_NOT_EXISTS
+  DATA_DOES_NOT_EXISTS,
+  AUTHORIZATION_EXPIRED
 }

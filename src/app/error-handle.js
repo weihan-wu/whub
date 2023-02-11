@@ -19,6 +19,10 @@ const errorHandler = (error, ctx) => {
       status = 401
       message = errorTypes.UNAUTHORIZATION
       break;
+    case errorTypes.AUTHORIZATION_EXPIRED:
+      status = 401
+      message = errorTypes.AUTHORIZATION_EXPIRED
+      break;
     case errorTypes.UNPERMISSION:
       status = 401
       message = errorTypes.UNPERMISSION

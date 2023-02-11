@@ -44,8 +44,16 @@ const verifyAuth = async (ctx, next) => {
     ctx.user = result
     await next()
   } catch (err) {
-    console.log(err);
-    const error = new Error(errorTypes.UNAUTHORIZATION)
+    console.log(err.message);
+    let error = ''
+    switch (err.message) {
+      case 'jwt expired':
+        error = new Error(errorTypes.AUTHORIZATION_EXPIRED)
+        break;
+      default:
+        error = new Error(errorTypes.UNAUTHORIZATION)
+        break;
+    }
     ctx.app.emit('error', error, ctx)
   }
 }
