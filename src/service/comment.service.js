@@ -20,6 +20,15 @@ class CommentService {
     const statement = `DELETE FROM comment WHERE id = ?;`;
     return await connection.execute(statement, [commentId])
   }
+
+  async getCommentsByMomentId(momentId) {
+    const statement = `SELECT m.id,m.content,m.createAt,m.updateAt,
+    JSON_OBJECT('id',u.id,'name',u.name) AS user
+    FROM comment AS m
+    LEFT JOIN user AS u ON u.id = m.user_id
+    WHERE moment_id = ?;`;
+    return await connection.execute(statement, [momentId])
+  }
 }
 
 module.exports = new CommentService()

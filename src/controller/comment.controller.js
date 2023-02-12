@@ -1,6 +1,12 @@
-const { create, reply, update,destory } = require('../service/comment.service')
+const { getCommentsByMomentId, create, reply, update, destory } = require('../service/comment.service')
 
 class CommentController {
+  async list(ctx, next) {
+    const { momentId } = ctx.request.query
+    const result = await getCommentsByMomentId(momentId)
+    ctx.body = result[0]
+  }
+
   async create(ctx, next) {
     const { momentId, content } = ctx.request.body
     const userId = ctx.user.id

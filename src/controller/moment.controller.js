@@ -1,4 +1,4 @@
-const { create, detail, list, update,destory } = require('../service/moment.service')
+const { create, detail, list, update, destory } = require('../service/moment.service')
 
 class MomentController {
   async create(ctx, next) {

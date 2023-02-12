@@ -3,7 +3,8 @@ const connection = require('../app/database')
 const SQL_FRAGMENT = `
 SELECT 
   m.id,m.content,m.createAt,m.updateAt,
-  JSON_OBJECT('id',u.id,'name',u.name) author
+  JSON_OBJECT('id',u.id,'name',u.name) author,
+	(SELECT COUNT(*) FROM comment AS c WHERE c.moment_id = m.id) commentCount
 FROM moment AS m
 LEFT JOIN user AS u
 ON m.user_id = u.id`;
@@ -15,9 +16,18 @@ class MomentService {
   }
 
   async detail(momentId) {
-    const statement = `
-    ${SQL_FRAGMENT}
-    WHERE m.id = ?;`;
+    // const statement = `
+    // ${SQL_FRAGMENT}
+    // WHERE m.id = ?;`;
+    const statement = `SELECT 
+    m.id,m.content,m.createAt,m.updateAt,JSON_OBJECT('id',u.id,'name',u.name) user,
+    JSON_ARRAYAGG(JSON_OBJECT('id',c.id,'content',c.content,'commentId',c.comment_id,'createAt',c.createAt,'updateAt',c.updateAt,
+                              'user',JSON_OBJECT('id',cu.id,'name',cu.name))) comments
+    FROM moment AS m
+    LEFT JOIN user AS u ON m.user_id = u.id
+    LEFT JOIN comment AS c ON c.moment_id = m.id
+    LEFT JOIN user cu ON c.user_id = cu.id
+    WHERE m.id = 1;`;
     return await connection.execute(statement, [momentId])
   }
 
