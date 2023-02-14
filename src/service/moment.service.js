@@ -4,7 +4,8 @@ const SQL_FRAGMENT = `
 SELECT 
   m.id,m.content,m.createAt,m.updateAt,
   JSON_OBJECT('id',u.id,'name',u.name) author,
-	(SELECT COUNT(*) FROM comment AS c WHERE c.moment_id = m.id) commentCount
+	(SELECT COUNT(*) FROM comment AS c WHERE c.moment_id = m.id) commentCount,
+  (SELECT COUNT(*) FROM moment_label AS ml WHERE ml.moment_id = m.id) labelCount
 FROM moment AS m
 LEFT JOIN user AS u
 ON m.user_id = u.id`;
@@ -16,18 +17,21 @@ class MomentService {
   }
 
   async detail(momentId) {
-    // const statement = `
-    // ${SQL_FRAGMENT}
-    // WHERE m.id = ?;`;
     const statement = `SELECT 
     m.id,m.content,m.createAt,m.updateAt,JSON_OBJECT('id',u.id,'name',u.name) user,
-    JSON_ARRAYAGG(JSON_OBJECT('id',c.id,'content',c.content,'commentId',c.comment_id,'createAt',c.createAt,'updateAt',c.updateAt,
-                              'user',JSON_OBJECT('id',cu.id,'name',cu.name))) comments
+    IF(COUNT(l.id),JSON_ARRAYAGG(JSON_OBJECT('id',l.id,'name',l.name)),NULL) labels,
+      (SELECT IF(COUNT(c.id),
+          JSON_ARRAYAGG(JSON_OBJECT('id',c.id,'content',c.content,'commentId',c.comment_id,'createAt',c.createAt,'updateAt',c.updateAt,'user',
+          JSON_OBJECT('id',cu.id,'name',cu.name))),
+      NULL) FROM comment AS c 
+      LEFT JOIN user AS cu ON c.user_id = cu.id 
+      WHERE m.id = c.moment_id) comments
     FROM moment AS m
     LEFT JOIN user AS u ON m.user_id = u.id
-    LEFT JOIN comment AS c ON c.moment_id = m.id
-    LEFT JOIN user cu ON c.user_id = cu.id
-    WHERE m.id = 1;`;
+    LEFT JOIN moment_label AS ml ON m.id = ml.moment_id
+    LEFT JOIN label AS l ON ml.label_id = l.id
+    WHERE m.id = 1
+    GROUP BY m.id;`;
     return await connection.execute(statement, [momentId])
   }
 
@@ -46,6 +50,17 @@ class MomentService {
   async destory(momentId) {
     const statement = `DELETE FROM moment WHERE id = ?;`
     return await connection.execute(statement, [momentId])
+  }
+
+  async hasLabel(momentId, labelId) {
+    const statement = `SELECT * FROM moment_label WHERE moment_id = ? AND label_id = ?;`;
+    const result = await connection.execute(statement, [momentId, labelId])
+    return result[0].length !== 0
+  }
+
+  async addLabel(momentId, labelId) {
+    const statement = `INSERT INTO moment_label (moment_id, label_id) VALUES (?,?);`;
+    return await connection.execute(statement, [momentId, labelId])
   }
 }
 

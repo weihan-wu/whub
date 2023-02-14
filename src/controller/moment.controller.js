@@ -1,4 +1,4 @@
-const { create, detail, list, update, destory } = require('../service/moment.service')
+const { create, detail, list, update, destory, hasLabel, addLabel } = require('../service/moment.service')
 
 class MomentController {
   async create(ctx, next) {
@@ -31,6 +31,18 @@ class MomentController {
     const { momentId } = ctx.request.params
     const result = await destory(momentId)
     ctx.body = result
+  }
+
+  async addLabels(ctx, next) {
+    const { labels } = ctx
+    const { momentId } = ctx.params
+    for (const label of labels) {
+      const isExist = await hasLabel(momentId, label.id)
+      if (!isExist) {
+        await addLabel(momentId, label.id)
+      }
+    }
+    ctx.body = "添加标签成功～"
   }
 }
 
