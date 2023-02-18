@@ -48,13 +48,24 @@ class MomentController {
   }
 
   async fileInfo(ctx, next) {
-    const { filename } = ctx.params
+    let { filename } = ctx.params
+    const { type } = ctx.query
 
-    const result = await getFileByFilename(filename)
-    const fileInfo = result[0][0]
-    
-    ctx.response.set('content-type', fileInfo.mimetype)
-    ctx.body = fs.createReadStream(`${PICTURE_PATH}/${filename}`)
+    try {
+      const result = await getFileByFilename(filename)
+      const fileInfo = result[0][0]
+
+      const types = ['small', 'middle', 'large']
+      if (types.some(item => item === type)) {
+        filename = filename + '-' + type
+      }
+
+      ctx.response.set('content-type', fileInfo.mimetype)
+      ctx.body = fs.createReadStream(`${PICTURE_PATH}/${filename}`)
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 }
 
