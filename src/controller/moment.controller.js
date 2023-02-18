@@ -1,5 +1,7 @@
+const fs = require('fs')
 const { create, detail, list, update, destory, hasLabel, addLabel } = require('../service/moment.service')
-
+const { getFileByFilename } = require('../service/file.service')
+const { PICTURE_PATH } = require('../constants/file-path')
 class MomentController {
   async create(ctx, next) {
     const userId = ctx.user.id;
@@ -43,6 +45,16 @@ class MomentController {
       }
     }
     ctx.body = "添加标签成功～"
+  }
+
+  async fileInfo(ctx, next) {
+    const { filename } = ctx.params
+
+    const result = await getFileByFilename(filename)
+    const fileInfo = result[0][0]
+    
+    ctx.response.set('content-type', fileInfo.mimetype)
+    ctx.body = fs.createReadStream(`${PICTURE_PATH}/${filename}`)
   }
 }
 

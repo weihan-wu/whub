@@ -11,20 +11,22 @@ INSERT INTO moment (content,user_id) VALUES ('无边落木萧萧下',1);
 
 SELECT 
 	m.id,m.content,m.createAt,m.updateAt,JSON_OBJECT('id',u.id,'name',u.`name`) `user`,
-	(SELECT COUNT(*) FROM comment AS c WHERE c.moment_id = m.id) commentCount
+	(SELECT COUNT(*) FROM comment AS c WHERE c.moment_id = m.id) commentCount,
+  (SELECT COUNT(*) FROM moment_label AS ml WHERE ml.moment_id = m.id) labelCount,
+	(SELECT COUNT(*) FROM file WHERE file.moment_id = m.id) pictureCount
 FROM moment AS m
-LEFT JOIN user AS u
-ON m.user_id = u.id
+LEFT JOIN user AS u ON m.user_id = u.id
 WHERE m.id = 1
 LIMIT 0,5;
 
 SELECT 
-	m.id,m.content,m.createAt,m.updateAt,JSON_OBJECT('id',u.id,'name',u.name) user,
-	IF(COUNT(l.id),JSON_ARRAYAGG(JSON_OBJECT('id',l.id,'name',l.name)),NULL) labels,
-	(SELECT IF(COUNT(c.id),
+	m.id,m.content,m.createAt,m.updateAt,JSON_OBJECT('id',u.id,'name',u.name,'avatarUrl',u.avatar_url) user,
+		IF(COUNT(l.id),JSON_ARRAYAGG(JSON_OBJECT('id',l.id,'name',l.name)),NULL) labels,
+		(SELECT IF(COUNT(c.id),
 			JSON_ARRAYAGG(JSON_OBJECT('id',c.id,'content',c.content,'commentId',c.comment_id,'createAt',c.createAt,'updateAt',c.updateAt,'user',
-			JSON_OBJECT('id',cu.id,'name',cu.name))),NULL) 
-		FROM comment c LEFT JOIN user AS cu ON c.user_id = cu.id WHERE m.id = c.moment_id) comments
+			JSON_OBJECT('id',cu.id,'name',cu.name,'avatarUrl',cu.avatar_url))),NULL) 
+		FROM comment c LEFT JOIN user AS cu ON c.user_id = cu.id WHERE m.id = c.moment_id) comments,
+		(SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8888/moment/images/',file.filename)) FROM file WHERE m.id = file.moment_id) images
 FROM moment AS m
 LEFT JOIN user AS u ON m.user_id = u.id
 LEFT JOIN moment_label AS ml ON m.id = ml.moment_id
