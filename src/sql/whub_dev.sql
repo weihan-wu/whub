@@ -1,5 +1,5 @@
 /*
- Navicat MySQL Data Transfer
+ Navicat Premium Data Transfer
 
  Source Server         : localhost
  Source Server Type    : MySQL
@@ -11,11 +11,35 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 14/02/2023 23:47:13
+ Date: 26/02/2023 20:21:43
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for avatar
+-- ----------------------------
+DROP TABLE IF EXISTS `avatar`;
+CREATE TABLE `avatar` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `filename` varchar(255) NOT NULL,
+  `mimetype` varchar(30) DEFAULT NULL,
+  `size` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `createAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updateAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `filename` (`filename`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `avatar_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Records of avatar
+-- ----------------------------
+BEGIN;
+COMMIT;
 
 -- ----------------------------
 -- Table structure for comment
@@ -44,6 +68,34 @@ CREATE TABLE `comment` (
 BEGIN;
 INSERT INTO `comment` (`id`, `content`, `moment_id`, `user_id`, `comment_id`, `createAt`, `updateAt`) VALUES (5, 'PHP是世界上最好的语言。', 1, 1, NULL, '2023-02-12 17:20:24', '2023-02-12 17:20:24');
 INSERT INTO `comment` (`id`, `content`, `moment_id`, `user_id`, `comment_id`, `createAt`, `updateAt`) VALUES (6, 'JS是世界上最好的语言。', 1, 1, NULL, '2023-02-12 17:56:42', '2023-02-12 17:56:42');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for file
+-- ----------------------------
+DROP TABLE IF EXISTS `file`;
+CREATE TABLE `file` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `filename` varchar(100) NOT NULL,
+  `mimetype` varchar(30) DEFAULT NULL,
+  `size` int DEFAULT NULL,
+  `moment_id` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `createAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updateAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `moment_id` (`moment_id`),
+  CONSTRAINT `file_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `file_ibfk_2` FOREIGN KEY (`moment_id`) REFERENCES `moment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Records of file
+-- ----------------------------
+BEGIN;
+INSERT INTO `file` (`id`, `filename`, `mimetype`, `size`, `moment_id`, `user_id`, `createAt`, `updateAt`) VALUES (1, '61928c3e51a00efdbd4f1be61c5a5d8d', 'image/jpeg', 127193, 1, 1, '2023-02-18 22:32:47', '2023-02-18 22:32:47');
+INSERT INTO `file` (`id`, `filename`, `mimetype`, `size`, `moment_id`, `user_id`, `createAt`, `updateAt`) VALUES (2, '40460207ec58b0d073986e218e85a2ab', 'image/jpeg', 1373790, 1, 1, '2023-02-18 22:32:47', '2023-02-18 22:32:47');
 COMMIT;
 
 -- ----------------------------
@@ -127,6 +179,7 @@ CREATE TABLE `user` (
   `password` varchar(64) NOT NULL,
   `createAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updateAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `avatar_url` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -135,10 +188,10 @@ CREATE TABLE `user` (
 -- Records of user
 -- ----------------------------
 BEGIN;
-INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`) VALUES (1, 'wuwh', 'e10adc3949ba59abbe56e057f20f883e', '2023-01-30 21:26:05', '2023-02-12 01:02:55');
-INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`) VALUES (3, 'zhangsan', 'e10adc3949ba59abbe56e057f20f883e', '2023-01-31 20:58:19', '2023-02-12 01:02:57');
-INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`) VALUES (4, 'lisi', 'e10adc3949ba59abbe56e057f20f883e', '2023-02-01 23:53:45', '2023-02-01 23:53:45');
-INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`) VALUES (5, 'wangwu', 'e10adc3949ba59abbe56e057f20f883e', '2023-02-06 23:05:05', '2023-02-06 23:05:05');
+INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`, `avatar_url`) VALUES (1, 'wuwh', 'e10adc3949ba59abbe56e057f20f883e', '2023-01-30 21:26:05', '2023-02-15 23:37:25', 'http://localhost:8888/user/1/avatar');
+INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`, `avatar_url`) VALUES (3, 'zhangsan', 'e10adc3949ba59abbe56e057f20f883e', '2023-01-31 20:58:19', '2023-02-12 01:02:57', NULL);
+INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`, `avatar_url`) VALUES (4, 'lisi', 'e10adc3949ba59abbe56e057f20f883e', '2023-02-01 23:53:45', '2023-02-01 23:53:45', NULL);
+INSERT INTO `user` (`id`, `name`, `password`, `createAt`, `updateAt`, `avatar_url`) VALUES (5, 'wangwu', 'e10adc3949ba59abbe56e057f20f883e', '2023-02-06 23:05:05', '2023-02-06 23:05:05', NULL);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
